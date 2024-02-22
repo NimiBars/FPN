@@ -6,23 +6,22 @@ using UnityEngine;
 public class SelectManager : MonoBehaviour
 {
     private string _selectTag = "Selectable";
-    public Material highlightMaterial;
     private bool _isHighlighted = false;
 
     private Transform _selection;
 
-    public TMP_Text _nameDisplay;
+    public TMP_Text nameDisplay;
 
     public float distanceFromItem = 3f;
 
-    private void update()
+    private void Update()
     {
-        if (_selection is null)
+        if (_selection != null)
         {
-            _nameDisplay.text = "";
+            nameDisplay.text = "";
             _isHighlighted = false;
             Renderer selectionRenderer = _selection.GetComponent<Renderer>();
-            selectionRenderer.material.DisableKeyword("EMISSION");
+            selectionRenderer.material.DisableKeyword("_EMISSION");
 
             _selection = null;
         }
@@ -43,8 +42,8 @@ public class SelectManager : MonoBehaviour
                 if (selection != _isHighlighted)
                 {
                     _isHighlighted = true;
-                    selection.GetComponent<Renderer>().material.EnableKeyword("EMISSION");
-                    _nameDisplay.text = selection.gameObject.name;
+                    selection.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");
+                    nameDisplay.text = selection.gameObject.name;
                 }
 
                 _selection = selection;
