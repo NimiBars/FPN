@@ -5,14 +5,19 @@ using UnityEngine;
 
 public class SelectManager : MonoBehaviour
 {
-    private string _selectTag = "Selectable";
+    private string _selectTag;
     private bool _isHighlighted = false;
-
     private Transform _selection;
-
     public TMP_Text nameDisplay;
-
     public float distanceFromItem = 3f;
+
+
+    // Door Stuffs
+    public Animator doorAnimator;
+    public GameObject doorText;
+    public bool hasKey = false;
+    private bool _isOpen = false;
+
 
     private void Update()
     {
@@ -37,7 +42,7 @@ public class SelectManager : MonoBehaviour
 
             var selection = hit.transform;
 
-            if(selection.CompareTag(_selectTag))
+            if(selection.CompareTag("Selectable") || selection.CompareTag("Door"))
             {
                 if (selection != _isHighlighted)
                 {
@@ -48,6 +53,65 @@ public class SelectManager : MonoBehaviour
 
                 _selection = selection;
             }
+        }
+
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            DoorInteraction();
+        }
+    }
+
+    void DoorInteraction()
+    {
+        Debug.Log("test");
+        RayCastHit hitInfo;
+
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+
+        Ray rayOrigin = Camera.main.ScreenPointToRay(mousePosition);
+
+        if (!hasKey)
+        {
+            doorText.SetActive(true);
+            invoke("DisableText", 2f);
+        }
+        else
+        {
+            if (Physics.Raycast(rayOrigin, out hitInfo, distanceFromItem)) ;
+            {
+                var selection = hitInfo.transform;
+
+                if (selection.gameObject.tag == "Door")
+                {
+                    if (!_isOpen)
+                    {
+                        doorAnimator.setTrigger("Open");
+                        doorAnimator.ResetTrigger("Close");
+                        _isOpen = true;
+                    }
+                    else
+                    {
+                        doorAnimator.setTrigger("Close");
+                        doorAnimator.ResetTrigger("Open");
+                        _isOpen = false;
+                    }
+                }
+            }
+        }
+    }
+
+    void DisableText()
+    {
+        doorText.SetActive(false);
+    }
+    
+    private void OnTriggerEVent(Collider other)
+    {
+        if (other gameObject.tag == "Key")
+        {
+            hasKey = true;
+            Destroy.gameObject
+
         }
     }
 }
