@@ -5,60 +5,43 @@ using UnityEngine;
 
 public class SelectManager : MonoBehaviour
 {
-    private string _selectTag;
-    private bool _isHighlighted = false;
     private Transform _selection;
-    public TMP_Text nameDisplay;
     public float distanceFromItem = 3f;
-
-
-    // Door Stuffs
-    public Animator doorAnimator;
-    public GameObject doorText;
-    public bool hasKey = false;
-    private bool _isOpen = false;
-
 
     private void Update()
     {
         if (_selection != null)
         {
-            nameDisplay.text = "";
-            _isHighlighted = false;
-            Renderer selectionRenderer = _selection.GetComponent<Renderer>();
-            selectionRenderer.material.DisableKeyword("_EMISSION");
-
+            if (_selection.GetComponent<Interactable>() != null)
+            {
+                _selection.GetComponent<Interactable>().HideItemInteractable();
+            }
+            
             _selection = null;
         }
 
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * distanceFromItem, Color.red);
 
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, distanceFromItem))
         {
-            Debug.Log("test");
 
             var selection = hit.transform;
 
-            if(selection.CompareTag("Selectable") || selection.CompareTag("Door"))
+            if (selection.GetComponent<Interactable>() != null)
             {
-                if (selection != _isHighlighted)
-                {
-                    _isHighlighted = true;
-                    selection.GetComponent<Renderer>().material.EnableKeyword("_EMISSION");
-                    nameDisplay.text = selection.gameObject.name;
-                }
-
-                _selection = selection;
+                selection.GetComponent<Interactable>().HideItemInteractable();
             }
+
+            _selection = selection;
         }
 
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             DoorInteraction();
         }
+
     }
 
     void DoorInteraction()
@@ -69,49 +52,24 @@ public class SelectManager : MonoBehaviour
         Vector2 mousePosition = Mouse.current.position.ReadValue();
 
         Ray rayOrigin = Camera.main.ScreenPointToRay(mousePosition);
-
-        if (!hasKey)
+        if (Physics.Raycast(rayOPrigin, out hitInfo, distanceFromItem))
         {
-            doorText.SetActive(true);
-            invoke("DisableText", 2f);
-        }
-        else
-        {
-            if (Physics.Raycast(rayOrigin, out hitInfo, distanceFromItem)) ;
+            if (!hasKey)
             {
-                var selection = hitInfo.transform;
-
-                if (selection.gameObject.tag == "Door")
-                {
-                    if (!_isOpen)
-                    {
-                        doorAnimator.setTrigger("Open");
-                        doorAnimator.ResetTrigger("Close");
-                        _isOpen = true;
-                    }
-                    else
-                    {
-                        doorAnimator.setTrigger("Close");
-                        doorAnimator.ResetTrigger("Open");
-                        _isOpen = false;
-                    }
-                }
+                doorText.SetActive(true);
+                invoke("DisableText", 2f);
             }
         }
     }
 
-    void DisableText()
-    {
-        doorText.SetActive(false);
-    }
+
     
     private void OnTriggerEVent(Collider other)
     {
         if (other gameObject.tag == "Key")
         {
-            hasKey = true;
+            //hasKey = true;
             Destroy.gameObject
-
         }
     }
 }
