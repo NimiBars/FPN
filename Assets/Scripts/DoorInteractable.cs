@@ -12,23 +12,37 @@ public class DoorInteractable : MonoBehaviour
 
     public void DoorInteraction()
     {
-        if (!_isOpen)
-            {
-                doorAnimator.setTrigger("Open");
-                doorAnimator.ResetTrigger("Close");
-                    _isOpen = true;
-            }
+        if (!hasKey)
+        {
+            if (!doorText.activeSelf)
+                StartCoroutine(DisplayText());
+        }
         else
+        {
+            if (!_isOpen)
             {
-                doorAnimator.setTrigger("Close");
+                doorAnimator.SetTrigger("Open");
+                doorAnimator.ResetTrigger("Close");
+                _isOpen = true;
+            }
+            else
+            {
+                doorAnimator.SetTrigger("Close");
                 doorAnimator.ResetTrigger("Open");
                 _isOpen = false;
             }
         }
     }
 
-    void DisableText()
+    public void SetDoorUnlockable()
     {
+        hasKey = true;
+    }
+
+    IEnumerator DisplayText()
+    {
+        doorText.SetActive(true);
+        yield return new WaitForSeconds(2);
         doorText.SetActive(false);
     }
 }

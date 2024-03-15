@@ -5,12 +5,10 @@ using UnityEngine;
 
 public class Interactable : MonoBehaviour
 {
-
     private bool _isHighlighted = false;
 
     public TMP_Text nameDisplay;
     public string displayText;
-
 
     private void Awake()
     {
@@ -34,5 +32,4 @@ public class Interactable : MonoBehaviour
         _isHighlighted = false;
         this.GetComponent<Renderer>().material.DisableKeyword("_EMISSION");
     }
-
 }
